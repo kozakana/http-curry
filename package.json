@@ -1,0 +1,14 @@
+{
+  "name": "http-curry",
+  "version": "0.1.0",
+  "description": "web site health checker",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kozakana (https://blog.kozakana.net/)",
+  "license": "ISC",
+  "dependencies": {
+    "urlsafe-base64": "^1.0.0"
+  }
+}
