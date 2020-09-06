@@ -1,6 +1,13 @@
 const AWS = require('aws-sdk')
+const DataBase = require('./DataBase.js')
 
-module.exports = class TextFileDataBase extends DataBase {
+/*
+ * [HttpCurryResponseData Table]
+ * Primary partition key: siteURI (String)
+ * Primary sort key: requestDatetime (Number)
+ */
+
+module.exports = class DynamoDBDataBase extends DataBase {
   constructor(option={}) {
     super()
 
@@ -11,13 +18,24 @@ module.exports = class TextFileDataBase extends DataBase {
       const awsCredentials = new AWS.Credentials({
         accessKeyId: creds.accessKeyId, secretAccessKey: creds.secretAccessKey, sessionToken: creds.sessionToken
       })
-      AWS.config.credentials = awsCredentials
+      AWS.config.update({
+        credentials: awsCredentials,
+        region: option.region
+      })
     } else if(option.profile) {
-      const awsCredentials = new AWS.SharedIniFileCredentials({profile: option.profile});
-      AWS.config.credentials = awsCredentials
+      const awsCredentials = new AWS.SharedIniFileCredentials({profile: option.profile})
+      AWS.config.update({
+        credentials: awsCredentials,
+        region: option.region
+      })
     }
 
-    option.tablePrefix
+    this.docClient = new AWS.DynamoDB.DocumentClient()
+
+    option.tableName = option.tableName || {}
+    this.tableName = {
+      responseData: option.tableName.responseData || 'HttpCurryResponseData'
+    }
   }
 
   deleteSiteData(uri){
@@ -29,9 +47,27 @@ module.exports = class TextFileDataBase extends DataBase {
   }
 
   setHealthData(uri, healthy, statusCode, responseTime, checkTime){
-    const data = { healthy, statusCode, responseTime, checkTime }
+    const params = {
+      TableName: this.tableName.responseData,
+      Item:{
+        siteURI: uri,
+        requestDatetime: (new Date()).getTime(),
+        healthy: true,
+        statusCode: statusCode,
+        responseTime: responseTime,
+        checkTime: checkTime.getTime()
+      }
+    }
 
-    return fs.promises.writeFile(this.generateFilePath(uri), `\n${JSON.stringify(data)}`, {flag: 'a'})
+    return new Promise((resolve, reject)=>{
+      this.docClient.put(params, (err, data)=>{
+        if (err) {
+          reject(err)
+        } else {
+          resolve(data)
+        }
+      })
+    })
   }
 
   generateFilePath(uri){
