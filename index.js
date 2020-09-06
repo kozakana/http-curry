@@ -1,5 +1,5 @@
 const SiteConfig = require('./SiteConfig.js')
-const DataBase = require('./TextFileDataBase.js')
+const DataBase = require('./db/TextFileDataBase.js')
 
 const https = require('https')
 

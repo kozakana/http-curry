@@ -19,7 +19,7 @@ module.exports = class TextFileDataBase extends DataBase {
   }
 
   setHealthData(uri, healthy, statusCode, responseTime, checkTime){
-    const data = { healthy, statusCode, responseTime, checkTime }
+    const data = { uri, healthy, statusCode, responseTime, checkTime }
 
     return fs.promises.writeFile(this.generateFilePath(uri), `\n${JSON.stringify(data)}`, {flag: 'a'})
   }
