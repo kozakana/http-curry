@@ -39,11 +39,42 @@ module.exports = class DynamoDBDataBase extends DataBase {
   }
 
   deleteSiteData(uri){
-    return fs.promises.unlink(this.generateFilePath(uri))
-  }
+    const params = {
+      TableName: this.tableName.responseData,
+      ExpressionAttributeNames:{'#uri': 'siteURI'},
+      ExpressionAttributeValues:{':val': uri},
+      KeyConditionExpression: '#uri = :val'
+    }
 
-  deleteAllSiteData(uri){
-    return fs.promises.unlink(this.generateFilePath(uri))
+    return new Promise((resolve, reject)=>{
+      this.docClient.query(params, (err, data)=>{
+        if(err){
+          reject(err)
+        }else{
+          const deleteList = data.Items.map((item)=>{
+            return new Promise((res, rej)=>{
+              this.docClient.delete({
+                TableName: this.tableName.responseData,
+                Key: {
+                  siteURI: item.siteURI,
+                  requestDatetime: item.requestDatetime
+                }
+              }, (err, data)=>{
+                if(err){
+                  rej(err)
+                } else {
+                  res(data)
+                }
+              })
+            })
+          })
+
+          Promise.all(deleteList).then((result)=>{
+            resolve(result)
+          })
+        }
+      })
+    })
   }
 
   setHealthData(uri, healthy, statusCode, responseTime, checkTime){
@@ -68,10 +99,5 @@ module.exports = class DynamoDBDataBase extends DataBase {
         }
       })
     })
-  }
-
-  generateFilePath(uri){
-    const fileName = `${URLSafeBase64.encode(uri)}.txt`
-    return path.join(this.fileDir, fileName)
   }
 }
