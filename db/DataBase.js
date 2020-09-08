@@ -6,4 +6,8 @@ module.exports = class DataBase {
   setHealthData(uri, siteStatus, statusCode, responseTime, checkTime){
     throw new Error("setHealthData method must be overridden.")
   }
+
+  getHealthData(uri, startCheckTime, endCheckTime){
+    throw new Error("setHealthData method must be overridden.")
+  }
 }
