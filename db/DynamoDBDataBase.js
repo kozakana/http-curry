@@ -2,9 +2,9 @@ const AWS = require('aws-sdk')
 const DataBase = require('./DataBase.js')
 
 /*
- * [HttpCurryResponseData Table]
+ * [HttpCurry_ResponseData Table]
  * Primary partition key: siteURI (String)
- * Primary sort key: requestDatetime (Number)
+ * Primary sort key: checkTime (Number)
  */
 
 module.exports = class DynamoDBDataBase extends DataBase {
@@ -34,7 +34,7 @@ module.exports = class DynamoDBDataBase extends DataBase {
 
     option.tableName = option.tableName || {}
     this.tableName = {
-      responseData: option.tableName.responseData || 'HttpCurryResponseData'
+      responseData: option.tableName.responseData || 'HttpCurry_ResponseData'
     }
   }
 
@@ -57,7 +57,7 @@ module.exports = class DynamoDBDataBase extends DataBase {
                 TableName: this.tableName.responseData,
                 Key: {
                   siteURI: item.siteURI,
-                  requestDatetime: item.requestDatetime
+                  checkTime: item.checkTime
                 }
               }, (err, data)=>{
                 if(err){
@@ -82,11 +82,10 @@ module.exports = class DynamoDBDataBase extends DataBase {
       TableName: this.tableName.responseData,
       Item:{
         siteURI: uri,
-        requestDatetime: (new Date()).getTime(),
+        checkTime: checkTime.getTime(),
         healthy: true,
         statusCode: statusCode,
         responseTime: responseTime,
-        checkTime: checkTime.getTime()
       }
     }
 
@@ -106,7 +105,7 @@ module.exports = class DynamoDBDataBase extends DataBase {
       TableName: this.tableName.responseData,
       ExpressionAttributeNames: {
         '#uri': 'siteURI',
-        '#dt': 'requestDatetime'
+        '#dt': 'checkTime'
       },
       ExpressionAttributeValues: {
         ':uri': uri,
