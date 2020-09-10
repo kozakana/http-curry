@@ -37,7 +37,13 @@ module.exports = class TextFileDataBase extends DataBase {
             const data = JSON.parse(line)
             const checkTime = new Date(data.checkTime).getTime()
             if(startCheckTime.getTime() <= checkTime && checkTime <= endCheckTime.getTime()){
-              matchedList.push(data)
+              matchedList.push({
+                uri: data.uri,
+                healthy: data.healthy,
+                statusCode: data.statusCode,
+                responseTime: data.responseTime,
+                checkTime:  new Date(data.checkTime),
+              })
             }
           } catch (_) {
             // Ignore error

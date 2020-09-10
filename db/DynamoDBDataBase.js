@@ -117,10 +117,20 @@ module.exports = class DynamoDBDataBase extends DataBase {
 
     return new Promise((resolve, reject)=>{
       this.docClient.query(params, (err, data)=>{
+        const items = data.Items.map((item)=>{
+          return {
+            uri: item.siteURI,
+            checkTime: new Date(item.checkTime),
+            healthy: item.healthy,
+            statusCode: item.statusCode,
+            responseTime: item.responseTime,
+          }
+        })
+
         if(err){
           reject(err)
         }else{
-          resolve(data)
+          resolve(items)
         }
       })
     })
