@@ -77,13 +77,13 @@ module.exports = class DynamoDBDataBase extends DataBase {
     })
   }
 
-  setHealthData(uri, healthy, statusCode, responseTime, checkTime){
+  setHealthData(uri, health, statusCode, responseTime, checkTime){
     const params = {
       TableName: this.tableName.responseData,
       Item:{
         siteURI: uri,
         checkTime: checkTime.getTime(),
-        healthy: true,
+        health: 'healthy',
         statusCode: statusCode,
         responseTime: responseTime,
       }
@@ -121,7 +121,7 @@ module.exports = class DynamoDBDataBase extends DataBase {
           return {
             uri: item.siteURI,
             checkTime: new Date(item.checkTime),
-            healthy: item.healthy,
+            health: item.health,
             statusCode: item.statusCode,
             responseTime: item.responseTime,
           }

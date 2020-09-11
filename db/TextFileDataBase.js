@@ -19,8 +19,8 @@ module.exports = class TextFileDataBase extends DataBase {
     return fs.promises.unlink(this.generateFilePath(uri))
   }
 
-  setHealthData(uri, healthy, statusCode, responseTime, checkTime){
-    const data = { uri, healthy, statusCode, responseTime, checkTime }
+  setHealthData(uri, health, statusCode, responseTime, checkTime){
+    const data = { uri, health, statusCode, responseTime, checkTime }
 
     return fs.promises.writeFile(this.generateFilePath(uri), `\n${JSON.stringify(data)}`, {flag: 'a'})
   }
@@ -39,7 +39,7 @@ module.exports = class TextFileDataBase extends DataBase {
             if(startCheckTime.getTime() <= checkTime && checkTime <= endCheckTime.getTime()){
               matchedList.push({
                 uri: data.uri,
-                healthy: data.healthy,
+                health: data.health,
                 statusCode: data.statusCode,
                 responseTime: data.responseTime,
                 checkTime:  new Date(data.checkTime),
