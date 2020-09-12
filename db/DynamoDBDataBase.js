@@ -100,6 +100,37 @@ module.exports = class DynamoDBDataBase extends DataBase {
     })
   }
 
+  getRecentlyHealthData(uri, num){
+    const params = {
+      TableName: this.tableName.responseData,
+      KeyConditionExpression: 'siteURI = :uri',
+      Limit: num,
+      ScanIndexForward: false,
+      ExpressionAttributeValues: {
+       ':uri': uri
+      }
+    }
+
+    return new Promise((resolve, reject)=>{
+      this.docClient.query(params, (err, data)=>{
+        if (err) {
+          reject(err)
+        } else {
+          const items = data.Items.map((item)=>{
+            return {
+              uri: item.siteURI,
+              checkTime: new Date(item.checkTime),
+              health: item.health,
+              statusCode: item.statusCode,
+              responseTime: item.responseTime,
+            }
+          })
+          resolve(items)
+        }
+      })
+    })
+  }
+
   getHealthData(uri, startCheckTime, endCheckTime){
     const params = {
       TableName: this.tableName.responseData,
