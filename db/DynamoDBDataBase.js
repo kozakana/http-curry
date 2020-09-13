@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk')
 const DataBase = require('./DataBase.js')
+const { healthStatuses } = require('../constants.js')
 
 /*
  * [HttpCurry_ResponseData Table]
@@ -83,7 +84,7 @@ module.exports = class DynamoDBDataBase extends DataBase {
       Item:{
         siteURI: uri,
         checkTime: checkTime.getTime(),
-        health: 'healthy',
+        health: healthStatuses.healthy,
         statusCode: statusCode,
         responseTime: responseTime,
       }
