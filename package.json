@@ -9,6 +9,7 @@
   "author": "kozakana (https://blog.kozakana.net/)",
   "license": "ISC",
   "dependencies": {
+    "@slack/webhook": "^5.0.3",
     "aws-sdk": "^2.729.0",
     "urlsafe-base64": "^1.0.0"
   }
