@@ -3,6 +3,7 @@ const TextFileDataBase = require('./db/TextFileDataBase.js')
 const DynamoDBDataBase = require('./db/DynamoDBDataBase.js')
 const { IncomingWebhook } = require('@slack/webhook')
 const { healthStatuses, isHealthy } = require('./constants.js')
+const sendmail = require('sendmail')();
 
 module.exports = class Alert {
   constructor(siteConfig, dbType, dbOption={}, option={}) {
@@ -23,7 +24,7 @@ module.exports = class Alert {
           let health = healthStatuses.healthy
           items.forEach((item)=>{
             if(!isHealthy(item.health)){
-              if(health < item.health) health = item.health 
+              if(health < item.health) health = item.health
             }
           })
 
@@ -73,5 +74,16 @@ module.exports = class Alert {
   }
 
   email(message, option){
+    option.text = message
+
+    return new Promise((resolve, reject)=>{
+      sendmail(option, (err, reply)=>{
+        if(err){
+          reject(err.stack)
+        }else{
+          resolve(reply)
+        }
+      })
+    })
   }
 }
