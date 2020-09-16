@@ -2,7 +2,7 @@
   "name": "http-curry",
   "version": "0.1.0",
   "description": "web site health checker",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
